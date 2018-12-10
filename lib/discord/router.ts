@@ -1,6 +1,11 @@
 import { Service } from "typedi";
 import { Message } from "discord.js";
-import { Action } from "./action";
+import {
+  Action,
+  ActionAction,
+  ActionCondition,
+  ActionConditionResult
+} from "./action";
 import { BasicActions } from "./basic/basic_actions";
 import { ModerationActions } from "./moderation/moderation_actions";
 
@@ -17,15 +22,25 @@ export class DiscordRouter {
   ];
 
   public async handleMessage(message: Readonly<Message>): Promise<void> {
-    const activeActions = this.actions
-      .filter(({ condition }) => condition(message))
-      .map(a => a.action(message));
+    const consideredActions = this.actions.map(
+      async (a): Promise<[boolean, ActionAction]> => {
+        const condition = a.condition(message);
+        return [
+          typeof condition === "boolean" ? condition : await condition,
+          a.action
+        ];
+      }
+    );
 
-    if (activeActions.length === 0) {
+    const takeActions = (await Promise.all(consideredActions))
+      .filter(([condition]) => condition)
+      .map(([_, action]) => action(message));
+
+    if (takeActions.length === 0) {
       console.log("bad command");
       return;
     }
 
-    await Promise.all(activeActions);
+    await Promise.all(takeActions);
   }
 }
