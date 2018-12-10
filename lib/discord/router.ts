@@ -1,24 +1,19 @@
-import { Service } from "typedi";
-import { Message } from "discord.js";
-import {
-  Action,
-  ActionAction,
-  ActionCondition,
-  ActionConditionResult
-} from "./action";
-import { BasicActions } from "./basic/basic_actions";
-import { ModerationActions } from "./moderation/moderation_actions";
+import { Message } from 'discord.js';
+import { Service } from 'typedi';
+import { Action, ActionAction } from './action';
+import { BasicActions } from './basic/basic_actions';
+import { ModerationActions } from './moderation/moderation_actions';
 
 @Service()
 export class DiscordRouter {
   constructor(
     private readonly basicActions: BasicActions,
-    private readonly moderationActions: ModerationActions
+    private readonly moderationActions: ModerationActions,
   ) {}
 
   private readonly actions: ReadonlyArray<Action> = [
     ...this.basicActions.actions,
-    ...this.moderationActions.actions
+    ...this.moderationActions.actions,
   ];
 
   public async handleMessage(message: Readonly<Message>): Promise<void> {
@@ -26,10 +21,10 @@ export class DiscordRouter {
       async (a): Promise<[boolean, ActionAction]> => {
         const condition = a.condition(message);
         return [
-          typeof condition === "boolean" ? condition : await condition,
-          a.action
+          typeof condition === 'boolean' ? condition : await condition,
+          a.action,
         ];
-      }
+      },
     );
 
     const takeActions = (await Promise.all(consideredActions))
@@ -37,7 +32,7 @@ export class DiscordRouter {
       .map(([_, action]) => action(message));
 
     if (takeActions.length === 0) {
-      console.log("bad command");
+      console.log("bad command"); // tslint:disable-line
       return;
     }
 

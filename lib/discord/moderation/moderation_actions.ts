@@ -10,7 +10,7 @@ export class ModerationActions {
         return !!content.match(/^!kick /);
       },
       async action(): Promise<void> {
-        console.log('kick');
+        console.log("kick"); // tslint:disable-line
       },
     },
   ];

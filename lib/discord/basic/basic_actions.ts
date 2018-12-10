@@ -10,7 +10,7 @@ export class BasicActions {
         return content === '!ping';
       },
       async action(): Promise<void> {
-        console.log('pong');
+        console.log("pong"); // tslint:disable-line
       },
     },
   ];
