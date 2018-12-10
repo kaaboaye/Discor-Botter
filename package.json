@@ -1,0 +1,14 @@
+{
+    "name": "Turbo-PWr-Bot",
+    "version": "1.0.0",
+    "description": "Test",
+    "main": "bot.js",
+    "author": {
+        "email": "wojciechkonury@gmai.com",
+        "name": "Edon Ketin"
+    },
+    "dependencies": {
+        "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
+        "winston": "^3.1.0"
+    }
+}
